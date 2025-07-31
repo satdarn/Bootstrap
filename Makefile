@@ -1,38 +1,26 @@
-CC = gcc 
-CFLAGS = -Wall -Wextra -G -Iinclude 
+CC = gcc
+CFLAGS = -Wall -Wextra -g -Iinclude 
 LDFLAGS = 
 
 # Directories
 SRC_DIR = src 
-TEST_DIR = test 
 BUILD_DIR = bin 
 INCLUDE_DIR = include 
 
 # Source Files
-MAIN_SRC = $(SRC_DIR)/main.c 
-
-# Test Files 
-TEST_SRCS = $(wildcard $(TEST_DIR)/*.c)
-
-# Object Files 
-MAIN_OBJ = $(BUID_DIR)/main.o 
-TEST_OBJS = $(patsubst $(TEST_DIR)/%.c, $(BUILD_DIR)/%.o, $(TEST_SRCS))
-
-# Executables 
-
-TARGET = bsc 
-TEST_EXEC = bootstrap_tests
+MAIN_SRC = src/main.c 
+TARGET = bin/bsc
 
 .PHONY: all clean test 
 
 all: $(TARGET)
 
-$(TARGET): $(SRC)
-	mkdir -p bin
-	$(CC) $(CFLAGS) $^ -o $@
+$(TARGET): $(MAIN_SRC)
+	mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)
 
 run: $(TARGET)
 	./$(TARGET)
 
 clean:
-	rm -rf bin
+	rm -rf $(BUILD_DIR)
