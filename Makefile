@@ -1,26 +1,33 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -g -Iinclude 
+CFLAGS = -Wall -Wextra -g -Iinclude
 LDFLAGS = 
 
 # Directories
-SRC_DIR = src 
-BUILD_DIR = bin 
-INCLUDE_DIR = include 
+SRC_DIR = src
+BUILD_DIR = bin
+INCLUDE_DIR = include
 
 # Source Files
-MAIN_SRC = src/main.c 
-TARGET = bin/bsc
+SRCS = $(wildcard $(SRC_DIR)/*.c)
+OBJS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
+TARGET = $(BUILD_DIR)/bsc
 
-.PHONY: all clean test 
+.PHONY: all clean test run
 
 all: $(TARGET)
 
-$(TARGET): $(MAIN_SRC)
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 run: $(TARGET)
-	./$(TARGET)
+	./$(TARGET) test/test.bsx
 
 clean:
 	rm -rf $(BUILD_DIR)
+
+test: $(TARGET)
+	./$(TARGET) test/test.bsx
