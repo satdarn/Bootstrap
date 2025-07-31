@@ -1,3 +1,23 @@
-main() {
-	exit 45;
+fn main() {
+    fn hello() { back "world"; }
+    let x = true;
+    unless false { back; }
+    if x and true or false { back; } else { back; }
+    while true { break; }
+    for i in [1, 2, 3] {}
+
+    let y = 10;
+    y = y + 1 - 2 * 3 / 4 % 5;
+    let z = y == 5 != 0 < 1 > 2 <= 3 >= 4;
+    let not = !true;
+
+    let s = "test";
+
+    let arr = [1, "two", false];
+    arr.push(3.14);
+    let last = arr.pop();
+    let size = arr.length();
+
+    let empty = [];
+    let nested = [[1], [2]];
 }
