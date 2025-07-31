@@ -1,0 +1,56 @@
+<program>        ::= (<function> | <statement>)*
+
+<function>       ::= "fn" <identifier> "(" <parameters>? ")" <block>
+<parameters>     ::= <identifier> ("," <identifier>)*
+
+<statement>      ::= <return_stmt>
+                   | <if_stmt>
+                   | <unless_stmt>
+                   | <while_stmt>
+                   | <for_stmt>
+                   | <var_decl>
+                   | <expr_stmt>
+                   | <block>
+
+<return_stmt>    ::= "back" <expr>? ";"
+<if_stmt>        ::= "if" <expr> <block> ("else" (<if_stmt> | <block>))?
+<unless_stmt>    ::= "unless" <expr> <block>
+<while_stmt>     ::= "while" <expr> <block>
+<for_stmt>       ::= "for" "(" <identifier> "in" <expr> ")" <block>
+<var_decl>       ::= "let" <identifier> ("=" <expr>)? ";"
+<expr_stmt>      ::= <expr> ";"
+<block>          ::= "{" <statement>* "}"
+
+<expr>           ::= <assign>
+<assign>         ::= <identifier> "=" <assign> | <logic_or>
+<logic_or>       ::= <logic_and> ("or" <logic_and>)*
+<logic_and>      ::= <equality> ("and" <equality>)*
+<equality>       ::= <relational> ("==" | "!=" <relational>)*
+<relational>     ::= <additive> ("<" | ">" | "<=" | ">=" <additive>)*
+<additive>       ::= <multiplicative> ("+" | "-" <multiplicative>)*
+<multiplicative> ::= <unary> ("*" | "/" | "%" <unary>)*
+<unary>          ::= ("!" | "-") <unary> | <primary>
+
+<primary>        ::= <number>
+                   | <string>
+                   | "true" | "false"
+                   | <identifier>
+                   | "(" <expr> ")"
+                   | <function_call>
+                   | <file_op>
+                   | <string_op>
+                   | <array_literal>
+                   | <array_op>
+
+<function_call>  ::= <identifier> "(" <arguments>? ")"
+<arguments>      ::= <expr> ("," <expr>)*
+
+<file_op>        ::= "File" "." ("open" | "read" | "write" | "close") "(" <arguments>? ")"
+<string_op>      ::= <string> "." ("length" | "split" | "concat") "(" <arguments>? ")"
+<array_literal>  ::= "[" <expr> ("," <expr>)* "]"
+<array_op>       ::= <array> "." ("push" | "pop" | "length") "(" <arguments>? ")"
+
+<number>         ::= [0-9]+
+<string>         ::= '"' ([^"\n\\] | "\\" .)* '"'
+<identifier>     ::= [a-zA-Z_] [a-zA-Z0-9_]*
+<array>          ::= <identifier> | <array_literal>
