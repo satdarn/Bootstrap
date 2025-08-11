@@ -1,0 +1,75 @@
+#ifndef PARSER_H
+#define PARSER_H
+
+typedef enum {
+	AST_PROGRAM,
+	AST_VARIABLE_DECL,
+	AST_FUNCTION_DECL,
+	AST_STRUCT_DECL,
+	AST_PARAMETER_LIST,
+	AST_PARAMETER,
+	AST_STRUCT_MEMBER,
+	AST_TYPE,
+	AST_BASIC_TYPE,
+	AST_TYPE_SUFFIX,
+	AST_BLOCK,
+	AST_STATEMENT,
+	AST_ASSIGNMENT,
+	AST_ASSIGNMENT_OP,
+	AST_IF_STMT,
+	AST_WHILE_STMT,
+	AST_FOR_STMT,
+	AST_RETURN_STMT,
+	AST_EXPR_STMT,
+	AST_EXPRESSION,
+	AST_TERNARY_EXPR,
+	AST_LOGICAL_OR_EXPR,
+	AST_LOGICAL_AND_EXPR,
+	AST_EQUALITY_EXPR,
+	AST_RELATIONAL_EXPR,
+	AST_SHIFT_EXPR,
+	AST_BITWISE_OR_EXPR,
+	AST_BITWISE_XOR_EXPR,
+	AST_BITWISE_AND_EXPR,
+	AST_ADDITIVE_EXPR,
+	AST_MULTIPLICATIVE_EXPR,
+	AST_UNARY_EXPR,
+	AST_UNARY_OP,
+	AST_POSTFIX_EXPR,
+	AST_POSTFIX_OP,
+	AST_PRIMARY_EXPR,
+	AST_STRUCT_LITERAL,
+	AST_FIELD_INIT,
+	AST_ARRAY_LITERAL,
+	AST_ARGUMENT_LIST,
+	AST_LITERAL,
+	AST_INT ,
+	AST_CHAR,
+	AST_STRING,
+	AST_BOOL,
+	AST_ID,
+	AST_ESCAPE_SEQ
+} ASTNodeType;
+
+
+typedef struct ASTNode {
+	ASTNodeType type;
+	char *value;
+	struct ASTNode **children;
+	int child_count;
+	int child_cap;
+} ASTNode;
+
+typedef struct {
+	Token *tkn_head;
+	Token *tkn_current;
+	ASTNode *ast_root;
+	ASTNode *ast_current;
+} Parser;
+
+Parser *create_parser(Token *tokens);
+void free_parser(Parser *p);
+void free_ast_node(ASTNode *node);
+
+ASTNode* parse(Parser *p);
+void print_tree(ASTNode *node);

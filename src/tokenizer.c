@@ -1,5 +1,6 @@
 #include "tokenizer.h"
 
+
 Tokenizer *init_tokenizer(FILE *file) {
 	Tokenizer *t = calloc(1, sizeof(Tokenizer));
 	if (!t) {
