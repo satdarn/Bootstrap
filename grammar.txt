@@ -1,56 +1,70 @@
-<program>        ::= (<function> | <statement>)*
+program = { declaration }
+declaration = variable_decl | function_decl | struct_decl
+variable_decl = "var" identifier_list ":" type [ "=" expression_list ]
+";"
+identifier_list = ID { " ," ID }
+expression_list = expression { " ," expression }
+function_decl = " func " ID "(" [ parameter_list ] ") " ":" type block
+parameter_list = parameter { " ," parameter }
+parameter = ID ":" type
+struct_decl = " struct " ID "{" { struct_member } "}"
+struct_member = variable_decl | function_decl
+type = basic_type { type_suffix }
+basic_type = " int " | " char " | " bool " | " void " | " File " | ID
+type_suffix = "*" | "[" INT "]"
+block = "{" { statement } "}"
+statement = variable_decl | assignment | if_stmt | while_stmt |
+for_stmt | switch_stmt | return_stmt | defer_stmt |
+expr_stmt
+assignment = expression assignment_op expression ";"
+assignment_op = "=" | "+=" | " -=" | "*=" | "/=" | "%=" |
+"&=" | "|=" | "^=" | " < <=" | " > >="
+if_stmt = " if " "(" expression ") " block
+{ " else " " if " "(" expression ") " block }
+[ " else " block ]
+while_stmt = " while " "(" expression ") " block
+for_stmt = for_c_style | for_range
+for_c_style = " for " "(" variable_decl expression ";" expression ") "
+block
+17
+for_range = " for " "(" " var " ID ":" type " in " expression ".." expression
+") " block
+switch_stmt = " switch " "(" expression ") " "{" { case_clause }
+[ default_clause ] "}"
+case_clause = " case " expression ":" { statement }
+default_clause = " default " ":" { statement }
+defer_stmt = " defer " expression ";"
+return_stmt = " return " [ expression_list ] ";"
+expr_stmt = expression ";"
+expression = ternary_expr
+ternary_expr = logical_or_expr [ "?" expression ":" expression ]
+logical_or_expr = logical_and_expr { "||" logical_and_expr }
+logical_and_expr = equality_expr { "&&" equality_expr }
+equality_expr = relational_expr { ("==" | "!=") relational_expr }
+relational_expr = shift_expr { (" <" | " >" | " <=" | " >=") shift_expr }
+shift_expr = bitwise_or_expr { (" < <" | " > >") bitwise_or_expr }
+bitwise_or_expr = bitwise_xor_expr { "|" bitwise_xor_expr }
+bitwise_xor_expr = bitwise_and_expr { "^" bitwise_and_expr }
+bitwise_and_expr = additive_expr { "&" additive_expr }
+additive_expr = multiplicative_expr { ("+" | " -") multiplicative_expr }
+multiplicative_expr = unary_expr { ("*" | "/" | "%") unary_expr }
+unary_expr = [ unary_op ] postfix_expr
+unary_op = "!" | " -" | "~" | "*" | "&" | "++" | " - -"
+postfix_expr = primary_expr { postfix_op }
+postfix_op = "." ID | "[" expression "]" | "(" [ argument_list ] ") " |
+"++" | " - -"
+primary_expr = literal | ID | "(" expression ") " | struct_literal |
+array_literal | " new " type [ "[" expression "]" ]
+struct_literal = "{" [ field_init { " ," field_init } ] "}"
+field_init = ID ":" expression
+array_literal = "[" [ expression { " ," expression } ] "]"
+argument_list = expression { " ," expression }
+literal = INT | CHAR | STRING | BOOL | " null "
+10.2 Lexical Tokens
+INT = [0 -9]+ | "0 x "[0 -9 A - Fa - f ]+
+CHAR = " ’" ( char | escape_seq ) " ’"
+STRING = ’" ’ ( char | escape_seq ) * ’" ’
+BOOL = " true " | " false "
+ID = [a - zA - Z_ ][ a - zA - Z0 -9 _ ]*
+escape_seq = "\\" | "\"" | "\ n " | "\ t " | "\0"
 
-<function>       ::= "fn" <identifier> "(" <parameters>? ")" <block>
-<parameters>     ::= <identifier> ("," <identifier>)*
-
-<statement>      ::= <return_stmt>
-                   | <if_stmt>
-                   | <unless_stmt>
-                   | <while_stmt>
-                   | <for_stmt>
-                   | <var_decl>
-                   | <expr_stmt>
-                   | <block>
-
-<return_stmt>    ::= "back" <expr>? ";"
-<if_stmt>        ::= "if" <expr> <block> ("else" (<if_stmt> | <block>))?
-<unless_stmt>    ::= "unless" <expr> <block>
-<while_stmt>     ::= "while" <expr> <block>
-<for_stmt>       ::= "for" "(" <identifier> "in" <expr> ")" <block>
-<var_decl>       ::= "let" <identifier> ("=" <expr>)? ";"
-<expr_stmt>      ::= <expr> ";"
-<block>          ::= "{" <statement>* "}"
-
-<expr>           ::= <assign>
-<assign>         ::= <identifier> "=" <assign> | <logic_or>
-<logic_or>       ::= <logic_and> ("or" <logic_and>)*
-<logic_and>      ::= <equality> ("and" <equality>)*
-<equality>       ::= <relational> ("==" | "!=" <relational>)*
-<relational>     ::= <additive> ("<" | ">" | "<=" | ">=" <additive>)*
-<additive>       ::= <multiplicative> ("+" | "-" <multiplicative>)*
-<multiplicative> ::= <unary> ("*" | "/" | "%" <unary>)*
-<unary>          ::= ("!" | "-") <unary> | <primary>
-
-<primary>        ::= <number>
-                   | <string>
-                   | "true" | "false"
-                   | <identifier>
-                   | "(" <expr> ")"
-                   | <function_call>
-                   | <file_op>
-                   | <string_op>
-                   | <array_literal>
-                   | <array_op>
-
-<function_call>  ::= <identifier> "(" <arguments>? ")"
-<arguments>      ::= <expr> ("," <expr>)*
-
-<file_op>        ::= "File" "." ("open" | "read" | "write" | "close") "(" <arguments>? ")"
-<string_op>      ::= <string> "." ("length" | "split" | "concat") "(" <arguments>? ")"
-<array_literal>  ::= "[" <expr> ("," <expr>)* "]"
-<array_op>       ::= <array> "." ("push" | "pop" | "length") "(" <arguments>? ")"
-
-<number>         ::= [0-9]+
-<string>         ::= '"' ([^"\n\\] | "\\" .)* '"'
-<identifier>     ::= [a-zA-Z_] [a-zA-Z0-9_]*
-<array>          ::= <identifier> | <array_literal>
