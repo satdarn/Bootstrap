@@ -211,11 +211,6 @@ make dev-setup
 make test
 ```
 
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## Project Status
 
 Bootstrap is currently in **pre-alpha development**. The core language features are not implemented, and the self-hosting compiler is not in progress.
